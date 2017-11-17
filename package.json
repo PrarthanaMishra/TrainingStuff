@@ -1,0 +1,17 @@
+{
+  "name": "postgres",
+  "version": "1.0.0",
+  "description": "sample example of the integration of node js and postgres",
+  "main": "arrowFunction.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "lodash": "^4.17.4",
+    "nodemon": "^1.12.1",
+    "pg": "^6.4.0",
+    "promise": "^8.0.1"
+  }
+}
