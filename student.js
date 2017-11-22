@@ -10,39 +10,41 @@ module.exports = (DB) => {
             .then(studentsList => _formatStudentsList(studentsList));
     }
     function _getList(connection) {
-        const query = `SELECT student.std_id,first_name,last_name,gender,contact_no 
-            from student, student_contact 
-            where student.std_id = student_contact.std_id`;
+        const query = `select *, (select json_agg(json_build_object('contact_number', contact_no)) from student_contact where std_id = s.std_id) as contacts,
+        (select json_agg(json_build_object('name',rel_name,'relation',name)) from student_relation where std_id=s.std_id) as relation, 
+        (select json_agg(json_build_object('Hobbies',hobbies)) from student_hobbies where std_id=s.std_id) as hobbies from student s`;
         
         return new Promise((resolve, reject) => {
             connection.query(query, (err, result) => err ? reject(err) : resolve(result.rows));
         });
     }
     function _formatStudentsList(studentsList) {
-        return _.reduce(studentsList, (arr, value) => {
-            const index = _.findIndex(arr, ({std_id}) => std_id === value.studentId);
-            if(index === -1) {
-                console.log(_.assignIn(_getStudentObject(value), {contacts: [_getStudentContactObject(value)]}));
-                arr.push(_.assignIn(_getStudentObject(value), {contacts: [_getStudentContactObject(value)]}));
-            } else {
-                arr[index].contacts.push(_getStudentContactObject(value));
-            }
-            return arr;
-        }, []);
-    }
-    function _getStudentObject(value) {
-        return {
-            studentId: value.std_id,
-            firstName: value.first_name,
-            lastName: value.last_name
-        };
-    }
-    function _getStudentContactObject(value) {
-        return {
-            contactNumber: value.contact_no
-        };
+        // return _.reduce(studentsList, (arr, value) => {
+        //     const index = _.findIndex(arr, ({std_id}) => std_id === value.studentId);
+        //     if(index === -1) {
+        //         console.log(_.assignIn(_getStudentObject(value), {contacts: [_getStudentContactObject(value)]}));
+        //         arr.push(_.assignIn(_getStudentObject(value), {contacts: [_getStudentContactObject(value)]}));
+        //     } else {
+        //         arr[index].contacts.push(_getStudentContactObject(value));
+        //     }
+        //     return arr;
+        // }, []);
+        return studentsList;
     }
 };
+//     function _getStudentObject(value) {
+//         return {
+//             studentId: value.std_id,
+//             firstName: value.first_name,
+//             lastName: value.last_name
+//         };
+//     }
+//     function _getStudentContactObject(value) {
+//         return {
+//             contactNumber: value.contact_no
+//         };
+//     }
+// };
 
 
 
